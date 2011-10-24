@@ -22,6 +22,7 @@ import org.apache.sshd.server.session.ServerSession
 import org.apache.sshd.common.keyprovider.AbstractKeyPairProvider
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider
 import scala.reflect.Manifest
+import scala.concurrent.ops.spawn
 
 class ScalaSshShell(port: Int, name:
                     String, user: String, passwd: String,
@@ -67,12 +68,6 @@ class ScalaSshShell(port: Int, name:
     else
       new SimpleGeneratorHostKeyProvider()
   )
-
-  lazy val cpUrls = Thread.currentThread.getContextClassLoader match {
-    case cl: java.net.URLClassLoader => cl.getURLs.toList
-    case _ => sys.error("classloader is not a URLClassLoader")
-  }
-  lazy val classpath = cpUrls map {_.toString}
 
   sshd.setShellFactory(
     new org.apache.sshd.common.Factory[org.apache.sshd.server.Command] {
@@ -129,11 +124,8 @@ class ScalaSshShell(port: Int, name:
               val il = new scala.tools.nsc.interpreter.SshILoop(None, pw)
               il.setPrompt(name + "> ")
               il.settings = new scala.tools.nsc.Settings()
-              il.settings.usejavacp.value = true
               il.settings.embeddedDefaults(
-                Thread.currentThread.getContextClassLoader)
-              il.settings.classpath.value =
-                classpath.distinct.mkString(java.io.File.pathSeparator)
+                getClass.getClassLoader)
               il.createInterpreter()
 
               il.in = new scala.tools.nsc.interpreter.JLineIOReader(
@@ -193,7 +185,11 @@ object ScalaSshShell {
                                  keysResourcePath=Some("/test.ssh.keys"))
     sshd.bind("pi", 3.1415926)
     sshd.bind("nums", Vector(1,2,3,4,5))
-    sshd.start()
+    spawn { 
+      sshd.start()
+    }
+    new java.util.Scanner(System.in) nextLine()
+    sshd.stop()
   }
 
   def generateKeys(path: String) {
