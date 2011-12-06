@@ -6,6 +6,7 @@
 package scala.tools.nsc
 package interpreter
 
+import scala.tools.jline.TerminalFactory
 import scala.tools.jline.console.ConsoleReader
 import scala.tools.jline.console.completer._
 import session._
@@ -42,7 +43,7 @@ class JLineIOReader(in: java.io.InputStream,
   }
 
   class JLineConsoleReader
-  extends ConsoleReader(in, out, null, null)
+  extends ConsoleReader(in, out, null, TerminalFactory.getFlavor(TerminalFactory.Flavor.UNIX))
   with ConsoleReaderHelper {
     // working around protected/trait/java insufficiencies.
     def goBack(num: Int): Unit = back(num)
