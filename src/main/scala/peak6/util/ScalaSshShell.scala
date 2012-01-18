@@ -138,6 +138,7 @@ trait Shell {
             il.setPrompt(name + "> ")
             il.settings = new scala.tools.nsc.Settings()
             il.settings.embeddedDefaults(getClass.getClassLoader)
+            il.settings.usejavacp.value = true
             il.createInterpreter()
 
             il.in = new scala.tools.nsc.interpreter.JLineIOReader(
@@ -197,7 +198,7 @@ object ScalaSshShell {
                                  keysResourcePath=Some("/test.ssh.keys"))
     sshd.bind("pi", 3.1415926)
     sshd.bind("nums", Vector(1,2,3,4,5))
-    spawn { 
+    spawn {
       sshd.start()
     }
     new java.util.Scanner(System.in) nextLine()
