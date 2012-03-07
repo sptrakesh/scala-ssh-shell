@@ -1,3 +1,11 @@
+name := "scala-ssh-shell"
+
+organization := "scala-ssh-shell"
+
+version := "0.0.1-SNAPSHOT"
+
+scalaVersion := "2.9.1"
+
 libraryDependencies <++= (scalaVersion) {
 	(scala) => Seq(
 	"org.scala-lang" % "scala-compiler" % scala,
