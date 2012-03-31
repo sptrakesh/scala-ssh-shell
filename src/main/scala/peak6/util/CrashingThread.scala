@@ -33,7 +33,7 @@ extends Thread() with com.weiglewilczek.slf4s.Logging {
     try
       target
     catch {
-      case e: Exception =>
+      case e: Throwable =>
 	val stack = e.getStackTrace.foldLeft (new StringBuilder()) {
 	  (sb, f) =>
 	    sb.append("  ")
