@@ -201,7 +201,8 @@ object ScalaSshShell {
     spawn {
       sshd.start()
     }
-    new java.util.Scanner(System.in) nextLine()
+    //new java.util.Scanner(System.in) nextLine()
+    Thread.sleep(60000)
     sshd.stop()
   }
 
