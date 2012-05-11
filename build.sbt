@@ -16,7 +16,7 @@ libraryDependencies <++= (scalaVersion) {
 	(scala) => Seq(
 	"org.scala-lang" % "scala-compiler" % scala,
 	"org.scala-lang" % "jline" % scala,
-	"com.weiglewilczek.slf4s" %% "slf4s" % "1.0.7",
+	"org.clapper" %% "grizzled-slf4j" % "0.6.9",
 	"org.slf4j" % "slf4j-simple" % "1.6.4",
 	"org.bouncycastle" % "bcprov-jdk16" % "1.46",
 	"org.apache.sshd" % "sshd-core" % "0.6.0"

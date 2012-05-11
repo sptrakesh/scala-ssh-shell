@@ -16,7 +16,7 @@
 
 package peak6.util
 
-import com.weiglewilczek.slf4s.Logging
+import grizzled.slf4j.Logging
 import java.io.{BufferedReader, InputStreamReader, PrintWriter}
 import org.apache.sshd.server.session.ServerSession
 import org.apache.sshd.common.keyprovider.AbstractKeyPairProvider

@@ -27,7 +27,7 @@ object CrashingThread {
 }
 
 class CrashingThread(name: Option[String], target: => Unit)
-extends Thread() with com.weiglewilczek.slf4s.Logging {
+extends Thread() with grizzled.slf4j.Logging {
   final override def run() {
     name foreach { setName(_) }
     try
