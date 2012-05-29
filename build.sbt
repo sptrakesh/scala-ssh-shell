@@ -1,6 +1,6 @@
 name := "scala-ssh-shell"
 
-organization := "scala-ssh-shell"
+organization := "com.peak6"
 
 version := "0.0.1-SNAPSHOT"
 
