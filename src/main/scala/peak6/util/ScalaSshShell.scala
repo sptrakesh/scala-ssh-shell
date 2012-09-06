@@ -25,6 +25,7 @@ import org.apache.sshd.server.{PasswordAuthenticator, Command}
 import org.apache.sshd.common.Factory
 import scala.reflect.Manifest
 import scala.concurrent.ops.spawn
+import scala.tools.nsc.interpreter.TypeStrings
 
 class ScalaSshShell(val port: Int, val name: String,
                     val user: String, val passwd: String,
@@ -45,7 +46,7 @@ trait Shell {
   var bindings: Seq[(String, String, Any)] = IndexedSeq()
 
   def bind[T: Manifest](name: String, value: T) {
-    bindings :+= (name, manifest[T].toString, value)
+    bindings :+= (name, TypeStrings.fromValue(value), value)
   }
 
   lazy val sshd = {
