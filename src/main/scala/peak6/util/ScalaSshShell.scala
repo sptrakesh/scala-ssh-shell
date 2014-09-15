@@ -169,6 +169,9 @@ trait Shell {
                 """def exit = println("Use ctrl-D to exit shell.")""")
 
               il.loop()
+            } catch {
+              case e: Exception =>
+                logger.error("Unhandled exception:", e)
             } finally il.closeInterpreter()
 
             logger.info("Exited repl, closing ssh.")

@@ -41,7 +41,6 @@ extends Thread() with grizzled.slf4j.Logging {
             sb += '\n'
 	}.toString
         logger.error("Unhandled exception:\n" + e.toString + "\n" + stack)
-        System.exit(1)
     }
   }
 }
