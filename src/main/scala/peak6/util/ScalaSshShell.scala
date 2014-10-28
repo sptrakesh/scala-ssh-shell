@@ -18,13 +18,22 @@ package peak6.util
 
 import grizzled.slf4j.Logging
 import java.io.{BufferedReader, InputStreamReader, PrintWriter}
+import java.net.InetSocketAddress
+import org.apache.mina.core.buffer.IoBuffer
+import org.apache.mina.core.service.IoAcceptor
+import org.apache.mina.core.service.IoHandlerAdapter
+import org.apache.mina.core.session.IoSession
+import org.apache.mina.transport.socket.nio.NioSocketAcceptor
 import org.apache.sshd.server.session.ServerSession
 import org.apache.sshd.common.keyprovider.AbstractKeyPairProvider
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider
 import org.apache.sshd.server.{PasswordAuthenticator, Command}
 import org.apache.sshd.common.Factory
+import org.apache.sshd.common.util.KeyUtils.getKeyType
+import scala.collection.JavaConversions._
 import scala.reflect.Manifest
-import scala.concurrent.ops.spawn
+import scala.concurrent.future
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.tools.nsc.interpreter.TypeStrings
 
 class ScalaSshShell(val port: Int, val name: String,
@@ -52,10 +61,27 @@ trait Shell {
   lazy val sshd = {
     val x = org.apache.sshd.SshServer.setUpDefaultServer()
     x.setPort(port)
-    x.setReuseAddress(true)
     x.setPasswordAuthenticator(auth)
     x.setKeyPairProvider(keyPairProvider)
     x.setShellFactory(new ShellFactory)
+    x
+  }
+
+  lazy val acceptor = {
+    val x = new NioSocketAcceptor()
+
+    x setHandler( new IoHandlerAdapter() {
+      override def messageReceived( session: IoSession, message : AnyRef ) : Unit =
+      {
+        val recv = message.asInstanceOf[IoBuffer]
+        val sent = IoBuffer allocate recv.remaining()
+        sent put recv
+        sent flip()
+        session write sent
+      }
+    } )
+
+    x setReuseAddress true
     x
   }
 
@@ -80,7 +106,7 @@ trait Shell {
 
           override def getKeyTypes() = getKeyType(pair)
           override def loadKey(s:String) = pair
-          def loadKeys() = Array[java.security.KeyPair]()
+          def loadKeys() = Seq[java.security.KeyPair]()
         }
     }.getOrElse(new SimpleGeneratorHostKeyProvider())
 
@@ -188,10 +214,12 @@ trait Shell {
 
   def start() {
     sshd.start()
+    acceptor.bind( new InetSocketAddress( port ) )
   }
 
   def stop() {
     sshd.stop()
+    if ( acceptor ne null ) acceptor dispose true
   }
 }
 
@@ -202,7 +230,7 @@ object ScalaSshShell {
                                  keysResourcePath=Some("/test.ssh.keys"))
     sshd.bind("pi", 3.1415926)
     sshd.bind("nums", Vector(1,2,3,4,5))
-    spawn {
+    future {
       sshd.start()
     }
     //new java.util.Scanner(System.in) nextLine()
