@@ -36,14 +36,10 @@ done from a scala shell:
 
     scala> peak6.util.ScalaSshShell.generateKeys("src/main/resources/test.ssh.keys")
 
-Note that the shell does not work when running under sbt's console.
+To run the included example, run the following:
 
-To run the included example, run the following with sbt 0.7:
-
-    $ sbt update
-    $ sbt compile
-    $ sbt package
-    $ scala -cp "$(find lib_managed | grep jar$ | xargs echo | sed -e 's# #:#g'):./target/scala-2.9.1/scala-ssh-shell_2.9.1-0.0.1-SNAPSHOT.jar" peak6.util.ScalaSshShell
+    $ ant standalone
+    $ java -jar deploy/sshshell-0.0.1.jar
 
 Now you can ssh in from a separate window, using "fluke" for the
 password:
