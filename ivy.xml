@@ -1,0 +1,44 @@
+<ivy-module version="2.2">
+  <info organisation="com.peak6" module="scala-ssh-shell"/>
+
+  <configurations>
+    <conf name="compile"  description="Compile the source tree"/>
+  </configurations>
+
+  <dependencies>
+
+    <dependency org="org.scala-lang" name="scala-library" rev="${scala.version}">
+      <artifact name="scala-library" type="jar" />
+    </dependency>
+
+    <dependency org="org.scala-lang" name="scala-compiler" rev="${scala.version}">
+      <artifact name="scala-compiler" type="jar" />
+    </dependency>
+
+    <dependency org="org.scala-lang" name="jline" rev="${scala.version}">
+      <artifact name="jline" type="jar" />
+    </dependency>
+
+    <dependency org="org.apache.sshd" name="sshd-core" rev="0.12.0">
+      <artifact name="sshd-core" type="jar" />
+    </dependency>
+
+    <dependency org="org.bouncycastle" name="bcprov-jdk16" rev="1.46">
+      <artifact name="bcprov-jdk16" type="jar" />
+    </dependency>
+
+    <dependency org="org.clapper" name="grizzled-slf4j_2.10" rev="1.0.2">
+      <artifact name="grizzled-slf4j_2.10" type="jar" />
+    </dependency>
+
+    <exclude org="org.fusesource.jansi" module="jansi" type="*" ext="*" conf="" matcher="exact" />
+    <exclude org="tomcat" module="tomcat-apr" type="*" ext="*" conf="" matcher="exact" />
+    <exclude org="com.jcraft" module="jzlib" type="*" ext="*" conf="" matcher="exact" />
+    <exclude org="org.bouncycastle" module=".*-jdk15on" type="*" ext="*" conf="" matcher="regexp" />
+    <exclude org="org.scalatest" module="scalatest.*" type="*" ext="*" conf="" matcher="regexp" />
+    <exclude org="org.springframework" module="*" type="*" ext="*" conf="" matcher="regexp" />
+
+  </dependencies>
+
+</ivy-module>
+

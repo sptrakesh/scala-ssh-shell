@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+
+<project name="scala-ssh-shell" default="jar" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+
+  <property environment="env" />
+  <property file="ant.properties" />
+
+  <target name="clean"
+          description="Clears all generated files, including build directories, distributables, and documentation.">
+    <delete dir="${dir.build}" />
+    <delete dir="${dir.deploy}" />
+  </target>
+
+  <path id="compile.classpath">
+    <fileset dir="${dir.lib}">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+  <target name="init" description="Initialise build system" depends="init-ivy, resolve">
+    <property name="scala-library.jar"
+      value="${dir.lib}/scala-library-${scala.version}.jar" />
+
+    <taskdef resource="scala/tools/ant/antlib.xml">
+      <classpath>
+        <path refid="compile.classpath"/>
+      </classpath>
+    </taskdef>
+  </target>
+
+  <target name="compile" depends="init" description="Compile the source files for the library">
+    <mkdir dir="${dir.build}" />
+
+    <javac destdir="${dir.build}" deprecation="yes"
+           source="${jdk.version}" target="${jdk.version}" includeantruntime="no">
+      <compilerarg value="-Xlint:deprecation"/>
+      <src>
+        <path path="${dir.src.java}" />
+      </src>
+      <classpath>
+        <path refid="compile.classpath"/>
+      </classpath>
+      <include name="**"/>
+    </javac>
+
+    <scalac destdir="${dir.build}" target="jvm-1.7"
+      deprecation="yes" addparams="-feature -language:postfixOps" fork="true">
+      <compilerarg value="-Xlint:deprecation"/>
+      <src>
+        <path path="${dir.src.scala}" />
+      </src>
+      <classpath>
+        <path refid="compile.classpath"/>
+        <path path="${dir.build}" />
+      </classpath>
+      <include name="**"/>
+    </scalac>
+
+  </target>
+
+  <target name="jar" depends="compile"
+    description="Builds jar file with dependencies for including in other apps">
+
+    <mkdir dir="${dir.deploy}" />
+    <delete>
+      <fileset dir="${dir.deploy}" includes="*.jar"/>
+    </delete>
+
+    <jar destfile="${dir.deploy}/deps.jar">
+      <zipgroupfileset dir="${dir.lib}">
+        <include name="*.jar" />
+        <exclude name="scala-*" />
+        <exclude name="slf4j-*" />
+      </zipgroupfileset>
+    </jar>
+
+    <sleep seconds="1" />
+
+    <jar destfile="${dir.deploy}/${shell.jar}-${shell.api.version}.jar">
+      <fileset dir="${dir.build}">
+        <include name="**" />
+      </fileset>
+      <fileset dir="${dir.src}/resources">
+        <include name="**" />
+      </fileset>
+      <zipfileset src="${dir.deploy}/deps.jar" excludes="META-INF/*.SF" />
+    </jar>
+
+    <delete file="${dir.deploy}/deps.jar" />
+
+  </target>
+
+  <target name="standalone" depends="compile"
+    description="Builds standalone executable jar file">
+
+    <mkdir dir="${dir.deploy}" />
+    <delete>
+      <fileset dir="${dir.deploy}" includes="*.jar"/>
+    </delete>
+
+    <jar destfile="${dir.deploy}/deps.jar">
+      <zipgroupfileset dir="${dir.lib}">
+        <include name="*.jar" />
+      </zipgroupfileset>
+    </jar>
+
+    <sleep seconds="1" />
+
+    <jar destfile="${dir.deploy}/${shell.jar}-${shell.api.version}.jar">
+      <manifest>
+        <attribute name="Main-Class" value="peak6.util.ScalaSshShell" />
+      </manifest>
+      <fileset dir="${dir.build}">
+        <include name="**" />
+      </fileset>
+      <fileset dir="${dir.src}/resources">
+        <include name="**" />
+      </fileset>
+      <zipfileset src="${dir.deploy}/deps.jar" excludes="META-INF/*.SF" />
+    </jar>
+
+    <delete file="${dir.deploy}/deps.jar" />
+
+  </target>
+
+  <!-- automatically configure download and install ivy if required. -->
+  <target name="download-ivy" unless="offline">
+    <mkdir dir="${ivy.jar.dir}"/>
+    <get src="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar"
+         dest="${ivy.jar.file}" usetimestamp="true"/>
+  </target>
+
+  <target name="init-ivy" depends="download-ivy">
+    <path id="ivy.lib.path">
+      <fileset dir="${ivy.jar.dir}" includes="*.jar"/>
+    </path>
+    <taskdef resource="org/apache/ivy/ant/antlib.xml"
+                 uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+  </target>
+
+  <target name="resolve" description="--> retrieve dependencies with ivy">
+    <ivy:retrieve />
+  </target>
+
+</project>
