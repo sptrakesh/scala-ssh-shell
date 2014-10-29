@@ -45,14 +45,18 @@ Now you can ssh in from a separate window, using "fluke" for the
 password:
 
     $ ssh -l user -p 4444 localhost
-    user@localhost's password:
+    Password authentication
+    Password: 
     Connected to test, starting repl...
-    Welcome to Scala version 2.9.1.r0-b20110831114755 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0).
+    Welcome to Scala version 2.10.4 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_60).
     Type in expressions to have them evaluated.
     Type :help for more information.
-    test> nums.sum
-    res0: Int = 15
-    test> pi/2
-    res1: Double = 1.5707963
-    test> println("Hello World!")
-    Hello World!
+    test> println( "Hello" )
+    Hello
+    test> List( 1, 2, 3 )
+    res1: List[Int] = List(1, 2, 3)
+    test> Map( "one" -> 1, "two" -> 2, "three" -> 3 )
+    res2: scala.collection.immutable.Map[String,Int] = Map(one -> 1, two -> 2, three -> 3)
+    test> :quit
+    Bye.
+    Connection to localhost closed.
