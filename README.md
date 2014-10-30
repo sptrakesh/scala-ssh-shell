@@ -18,7 +18,10 @@ Embed this in your code by running the following:
                                  keysResourcePath=Some("/test.ssh.keys"))
     sshd.bind("pi", 3.1415926)
     sshd.bind("nums", Vector(1,2,3,4,5))
-    sshd.start()
+    future
+    {
+      sshd.start()
+    }
 
 Most of that should be self explanatory. The 'name' is the name that
 will be used for the parent thread, as well as the name that will
